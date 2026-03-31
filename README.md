@@ -1,6 +1,12 @@
 Spring Web RSS Channels
 ---------------------------------------------
 
+This repository was imported into a separate GitHub repo as a replacement source for the unavailable download link from a Java project list PDF.
+Original upstream project: https://github.com/DanielMichalski/spring-web-rss-channels
+Local changes in this copy:
+- added Java 9+ compatibility dependencies for JAXB and `javax.annotation`
+- upgraded the WAR plugin so Maven packaging works on newer JDKs
+
 Spring Web RSS Channels is a RSS feed reader web application built on Spring, JPA (Hibernate), Twitter Bootstrap, Apache tiles and JQuery. \
 It allows you to specify RSS channels and then display results.
 
@@ -22,6 +28,7 @@ The documentation is divided into several sections:
 
 ## Prerequisites
 - [Java JDK 8](https://www.oracle.com/pl/java/technologies/javase/javase-jdk8-downloads.html)
+- Also verified locally with JDK 25 after the compatibility updates above.
 
 ## Libraries
 | Library name                                        | Description                                                                                                                                                         |
