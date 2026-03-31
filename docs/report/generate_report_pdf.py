@@ -3,6 +3,7 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 from pypdf import PdfReader
+from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -15,6 +16,17 @@ SOURCE = ROOT / "final-project-report.md"
 TARGET = ROOT / "final-project-report.pdf"
 TEMP_TARGET = ROOT / "_temp_report_for_toc.pdf"
 TOC_PAGE_COUNT = 2
+
+COVER_HEADER_1 = "MINISTRY OF EDUCATION & TRAINING"
+COVER_HEADER_2 = "HO CHI MINH CITY UNIVERSITY OF TECHNOLOGY"
+COVER_TITLE = "FINAL PROJECT REPORT"
+COVER_SUBTITLE = "[CMP186] - TOOLS AND ENVIRONMENTS FOR SOFTWARE DEVELOPMENT"
+COVER_STUDENT = "Mai Tan Phat"
+COVER_GITHUB = "Kise75"
+COVER_REPOSITORY = "https://github.com/Kise75/rss-feed-reader-java"
+COVER_SUBMISSION = "Source code, report, slide"
+COVER_DEADLINE = "Saturday, April 4, 2026"
+COVER_CITY_YEAR = "Ho Chi Minh City, 2026"
 
 
 def build_styles():
@@ -61,50 +73,6 @@ def build_styles():
             leading=16,
             spaceBefore=4,
             spaceAfter=6,
-        )
-    )
-    styles.add(
-        ParagraphStyle(
-            name="CoverTitle",
-            parent=styles["Title"],
-            fontName="Helvetica-Bold",
-            fontSize=24,
-            leading=30,
-            alignment=TA_CENTER,
-            spaceAfter=18,
-        )
-    )
-    styles.add(
-        ParagraphStyle(
-            name="CoverSubtitle",
-            parent=styles["Title"],
-            fontName="Helvetica-Bold",
-            fontSize=18,
-            leading=22,
-            alignment=TA_CENTER,
-            spaceAfter=24,
-        )
-    )
-    styles.add(
-        ParagraphStyle(
-            name="CoverMetaLabel",
-            parent=styles["BodyText"],
-            fontName="Helvetica-Bold",
-            fontSize=12.8,
-            leading=17,
-            alignment=TA_CENTER,
-            spaceAfter=2,
-        )
-    )
-    styles.add(
-        ParagraphStyle(
-            name="CoverMetaValue",
-            parent=styles["BodyText"],
-            fontName="Helvetica",
-            fontSize=12.8,
-            leading=17,
-            alignment=TA_CENTER,
-            spaceAfter=10,
         )
     )
     styles.add(
@@ -160,17 +128,66 @@ def format_inline(text: str) -> str:
     return "".join(chunks)
 
 
-def cover_label_and_value(text: str):
-    if ":" not in text:
-        return None, None
-    label, value = text.split(":", 1)
-    return label.strip() + ":", value.strip()
-
-
 def add_page_number(canvas, doc):
     canvas.saveState()
     canvas.setFont("Helvetica", 9)
     canvas.drawRightString(A4[0] - 1.7 * cm, 1.0 * cm, f"Page {doc.page}")
+    canvas.restoreState()
+
+
+def draw_cover_page(canvas, doc):
+    width, height = A4
+    canvas.saveState()
+
+    border_color = colors.HexColor("#1F3A93")
+    canvas.setStrokeColor(border_color)
+    canvas.setLineWidth(1.4)
+    canvas.rect(1.2 * cm, 1.2 * cm, width - 2.4 * cm, height - 2.4 * cm)
+    canvas.setLineWidth(0.8)
+    canvas.rect(1.35 * cm, 1.35 * cm, width - 2.7 * cm, height - 2.7 * cm)
+
+    logo_x = 2.0 * cm
+    logo_y = height - 2.75 * cm
+    canvas.setFillColor(border_color)
+    canvas.setFont("Helvetica-Bold", 16)
+    canvas.drawString(logo_x, logo_y, "HUTECH")
+
+    canvas.setFillColor(colors.black)
+    canvas.setFont("Helvetica", 7.6)
+    canvas.drawCentredString(width / 2 + 0.9 * cm, height - 2.05 * cm, COVER_HEADER_1)
+    canvas.setFont("Helvetica-Bold", 8.0)
+    canvas.drawCentredString(width / 2 + 0.9 * cm, height - 2.42 * cm, COVER_HEADER_2)
+
+    canvas.setFont("Times-Bold", 16)
+    canvas.drawCentredString(width / 2, height - 8.5 * cm, COVER_TITLE)
+    canvas.setFont("Times-Bold", 11)
+    canvas.drawCentredString(width / 2, height - 9.4 * cm, COVER_SUBTITLE)
+
+    info_x = 2.0 * cm
+    value_x = 6.6 * cm
+    start_y = height - 14.2 * cm
+    line_gap = 0.95 * cm
+
+    cover_rows = [
+        ("Course:", "CMP186"),
+        ("Student's name:", COVER_STUDENT),
+        ("GitHub account:", COVER_GITHUB),
+        ("Repository:", COVER_REPOSITORY),
+        ("Submission items:", COVER_SUBMISSION),
+        ("Submission deadline:", COVER_DEADLINE),
+    ]
+
+    canvas.setFont("Times-Roman", 10)
+    for index, (label, value) in enumerate(cover_rows):
+        y = start_y - index * line_gap
+        canvas.drawString(info_x, y, label)
+        canvas.setFont("Times-Bold" if index in [0, 1] else "Times-Roman", 10)
+        canvas.drawString(value_x, y, value)
+        canvas.setFont("Times-Roman", 10)
+
+    canvas.setFont("Times-Roman", 12)
+    canvas.drawCentredString(width / 2, 4.0 * cm, COVER_CITY_YEAR)
+
     canvas.restoreState()
 
 
@@ -312,20 +329,9 @@ def parse_markdown(source_text: str, styles, toc_mode="manual", toc_pages=None):
         paragraph_buffer = []
         if not text:
             return
-        if not cover_done and text.upper() == "FINAL PROJECT REPORT":
-            story.append(Spacer(1, 4.2 * cm))
-            story.append(Paragraph(format_inline(text), styles["CoverTitle"]))
-        elif not cover_done and text.startswith("## RSS Feed Reader Project Using Git and GitHub"):
-            story.append(Paragraph(format_inline(text.replace("## ", "")), styles["CoverSubtitle"]))
-        elif not cover_done:
-            label, value = cover_label_and_value(text)
-            if label and value:
-                story.append(Paragraph(format_inline(label), styles["CoverMetaLabel"]))
-                story.append(Paragraph(format_inline(value), styles["CoverMetaValue"]))
-            else:
-                story.append(Paragraph(format_inline(text), styles["CoverMetaValue"]))
-        else:
-            story.append(Paragraph(format_inline(text), styles["BodyProject"]))
+        if not cover_done:
+            return
+        story.append(Paragraph(format_inline(text), styles["BodyProject"]))
 
     for raw_line in lines:
         line = raw_line.rstrip()
@@ -366,8 +372,14 @@ def parse_markdown(source_text: str, styles, toc_mode="manual", toc_pages=None):
 
         if line.strip() == r"\newpage":
             flush_paragraph()
-            story.append(PageBreak())
+            if not cover_done:
+                story.append(PageBreak())
+            else:
+                story.append(PageBreak())
             cover_done = True
+            continue
+
+        if not cover_done:
             continue
 
         if not line.strip():
@@ -426,7 +438,7 @@ def parse_markdown(source_text: str, styles, toc_mode="manual", toc_pages=None):
 
 def build_pdf(path: Path, story):
     doc = build_doc(path)
-    doc.build(story, onFirstPage=add_page_number, onLaterPages=add_page_number)
+    doc.build(story, onFirstPage=draw_cover_page, onLaterPages=add_page_number)
 
 
 def main():
