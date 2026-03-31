@@ -2,11 +2,25 @@
 
 ## RSS Feed Reader Project Using Git and GitHub
 
-Course: CMP186 - Tools and Environments for Software Development  
-University: HUTECH International Institute of Technology  
-Student / GitHub Account: Tan Phat - `Kise75`  
-Submission items: Source code, report, slide  
-Submission deadline: Saturday, April 4, 2026  
+Course:
+
+CMP186 - Tools and Environments for Software Development
+
+University:
+
+HUTECH International Institute of Technology
+
+Student / GitHub Account:
+
+Tan Phat - `Kise75`
+
+Submission Items:
+
+Source code, report, slide
+
+Submission Deadline:
+
+Saturday, April 4, 2026
 
 \newpage
 

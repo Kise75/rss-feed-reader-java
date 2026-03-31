@@ -68,10 +68,43 @@ def build_styles():
             name="CoverTitle",
             parent=styles["Title"],
             fontName="Helvetica-Bold",
-            fontSize=23,
-            leading=28,
+            fontSize=24,
+            leading=30,
             alignment=TA_CENTER,
-            spaceAfter=14,
+            spaceAfter=18,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CoverSubtitle",
+            parent=styles["Title"],
+            fontName="Helvetica-Bold",
+            fontSize=18,
+            leading=22,
+            alignment=TA_CENTER,
+            spaceAfter=24,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CoverMetaLabel",
+            parent=styles["BodyText"],
+            fontName="Helvetica-Bold",
+            fontSize=12.8,
+            leading=17,
+            alignment=TA_CENTER,
+            spaceAfter=2,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CoverMetaValue",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=12.8,
+            leading=17,
+            alignment=TA_CENTER,
+            spaceAfter=10,
         )
     )
     styles.add(
@@ -125,6 +158,13 @@ def format_inline(text: str) -> str:
         else:
             chunks.append(part)
     return "".join(chunks)
+
+
+def cover_label_and_value(text: str):
+    if ":" not in text:
+        return None, None
+    label, value = text.split(":", 1)
+    return label.strip() + ":", value.strip()
 
 
 def add_page_number(canvas, doc):
@@ -273,10 +313,17 @@ def parse_markdown(source_text: str, styles, toc_mode="manual", toc_pages=None):
         if not text:
             return
         if not cover_done and text.upper() == "FINAL PROJECT REPORT":
-            story.append(Spacer(1, 5 * cm))
+            story.append(Spacer(1, 4.2 * cm))
             story.append(Paragraph(format_inline(text), styles["CoverTitle"]))
         elif not cover_done and text.startswith("## RSS Feed Reader Project Using Git and GitHub"):
-            story.append(Paragraph(format_inline(text.replace("## ", "")), styles["Heading2Project"]))
+            story.append(Paragraph(format_inline(text.replace("## ", "")), styles["CoverSubtitle"]))
+        elif not cover_done:
+            label, value = cover_label_and_value(text)
+            if label and value:
+                story.append(Paragraph(format_inline(label), styles["CoverMetaLabel"]))
+                story.append(Paragraph(format_inline(value), styles["CoverMetaValue"]))
+            else:
+                story.append(Paragraph(format_inline(text), styles["CoverMetaValue"]))
         else:
             story.append(Paragraph(format_inline(text), styles["BodyProject"]))
 
