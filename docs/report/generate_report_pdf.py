@@ -21,6 +21,7 @@ COVER_HEADER_1 = "MINISTRY OF EDUCATION & TRAINING"
 COVER_HEADER_2 = "HO CHI MINH CITY UNIVERSITY OF TECHNOLOGY"
 COVER_TITLE = "FINAL PROJECT REPORT"
 COVER_SUBTITLE = "[CMP186] - TOOLS AND ENVIRONMENTS FOR SOFTWARE DEVELOPMENT"
+COVER_LECTURER = "NGUYEN VAN TAN"
 COVER_STUDENT = "Mai Tan Phat"
 COVER_GITHUB = "Kise75"
 COVER_REPOSITORY = "https://github.com/Kise75/rss-feed-reader-java"
@@ -169,6 +170,7 @@ def draw_cover_page(canvas, doc):
     line_gap = 0.95 * cm
 
     cover_rows = [
+        ("Lecturer's name:", COVER_LECTURER),
         ("Course:", "CMP186"),
         ("Student's name:", COVER_STUDENT),
         ("GitHub account:", COVER_GITHUB),
