@@ -16,4 +16,7 @@ public interface ItemRepository extends JpaRepository<RssFeedEntryEntity, Long> 
 
     RssFeedEntryEntity findByRssFeedEntityAndLink(RssFeedEntity rssFeedEntity, String link);
 
+    List<RssFeedEntryEntity> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String titleKeyword, String descriptionKeyword, Pageable pageable);
+
 }

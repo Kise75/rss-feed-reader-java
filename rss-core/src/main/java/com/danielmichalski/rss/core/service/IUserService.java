@@ -23,4 +23,6 @@ public interface IUserService {
 
     void removeUser(Long id);
 
+    long countAllUsers();
+
 }

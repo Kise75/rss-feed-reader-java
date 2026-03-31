@@ -44,9 +44,18 @@ public class RssFeedService implements IRssFeedService {
     @Override
     public void save(RssFeedEntity rssFeedEntity, String name) {
         UserEntity userEntity = userRepository.findByName(name);
+        List<RssFeedEntryEntity> itemEntities;
+        try {
+            itemEntities = rssService.getItems(rssFeedEntity.getUrl());
+        } catch (RSSException e) {
+            throw new IllegalArgumentException("Could not load RSS feed from the provided URL.", e);
+        }
         rssFeedEntity.setUserEntity(userEntity);
         blogRepository.save(rssFeedEntity);
-        saveAll(rssFeedEntity);
+        itemEntities.forEach(entry -> {
+            entry.setRssFeedEntity(rssFeedEntity);
+            itemRepository.save(entry);
+        });
     }
 
     @Override
@@ -80,6 +89,20 @@ public class RssFeedService implements IRssFeedService {
     @PreAuthorize("#blog.userEntity.name == authentication.name or hasRole('ROLE_ADMIN')")
     public void delete(@P("blog") RssFeedEntity rssFeedEntity) {
         blogRepository.delete(rssFeedEntity);
+    }
+
+    @Override
+    @PreAuthorize("#blog.userEntity.name == authentication.name or hasRole('ROLE_ADMIN')")
+    public void refresh(@P("blog") RssFeedEntity rssFeedEntity) {
+        if (rssFeedEntity == null) {
+            throw new IllegalArgumentException("Channel not found.");
+        }
+        saveAll(rssFeedEntity);
+    }
+
+    @Override
+    public long countAllFeeds() {
+        return blogRepository.count();
     }
 }
 

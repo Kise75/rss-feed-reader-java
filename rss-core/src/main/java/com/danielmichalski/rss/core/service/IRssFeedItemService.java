@@ -9,8 +9,12 @@ import com.danielmichalski.rss.core.entity.RssFeedEntryEntity;
  */
 public interface IRssFeedItemService {
 
-    public List<RssFeedEntryEntity> findAll();
+    List<RssFeedEntryEntity> findAll();
 
-    public List<RssFeedEntryEntity> find10NewestEntries();
+    List<RssFeedEntryEntity> find10NewestEntries();
+
+    List<RssFeedEntryEntity> searchNewestEntries(String keyword, int limit);
+
+    long countAllEntries();
 
 }

@@ -28,4 +28,14 @@ public class RssFeedItemService implements IRssFeedItemService {
         return itemRepository.findAll(pageRequest).getContent();
     }
 
+    public List<RssFeedEntryEntity> searchNewestEntries(String keyword, int limit) {
+        PageRequest pageRequest = new PageRequest(0, limit, Sort.Direction.DESC, "publishedDate");
+        return itemRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                keyword, keyword, pageRequest);
+    }
+
+    public long countAllEntries() {
+        return itemRepository.count();
+    }
+
 }

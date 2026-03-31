@@ -39,8 +39,36 @@
         <div class="panel panel-success">
             <div class="panel-heading"><spring:message code="page.myAccount.header.account"/></div>
             <div class="panel-body">
+                <c:if test="${not empty successMessage}">
+                    <div class="alert alert-success" role="alert">${successMessage}</div>
+                </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-danger" role="alert">${errorMessage}</div>
+                </c:if>
+
                 <div class="row">
                     <div class="channels">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="well text-center">
+                                    <h4><spring:message code="page.myAccount.stats.channels"/></h4>
+                                    <h3>${user.blogEntities.size()}</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="well text-center">
+                                    <h4><spring:message code="page.myAccount.stats.latestItems"/></h4>
+                                    <h3>${totalAccountItems}</h3>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="well text-center">
+                                    <h4><spring:message code="page.myAccount.stats.owner"/></h4>
+                                    <h3>${user.name}</h3>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Button trigger modal -->
                         <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#newChannelModal">
                             <spring:message code="page.myAccount.newChannel"/>
@@ -55,6 +83,12 @@
                             </c:forEach>
                         </ul>
 
+                        <c:if test="${empty user.blogEntities}">
+                            <div class="alert alert-info" style="margin-top: 15px;">
+                                <spring:message code="page.myAccount.emptyChannels"/>
+                            </div>
+                        </c:if>
+
                         <div class="space"></div>
 
                         <!-- Tab panes -->
@@ -64,9 +98,14 @@
                                     <h1>${blog.name}</h1>
 
                                     <p>
-                                        <a href="<spring:url value="/blog/remove/${blog.id}"/>"
-                                           class="btn btn-danger triggerRemove">Remove</a>
-                                            ${blog.url}
+                                        <form method="post" action="<spring:url value="/blog/refresh/${blog.id}"/>" style="display:inline;">
+                                            <button type="submit" class="btn btn-info"><spring:message code="page.myAccount.refresh"/></button>
+                                        </form>
+                                        <form method="post" action="<spring:url value="/blog/remove/${blog.id}"/>" style="display:inline;"
+                                              onsubmit="return confirm('<spring:message code="page.myAccount.remove.confirm"/>');">
+                                            <button type="submit" class="btn btn-danger"><spring:message code="page.myAccount.remove"/></button>
+                                        </form>
+                                        ${blog.url}
                                     </p>
 
                                     <div class="space"></div>

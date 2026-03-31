@@ -16,4 +16,8 @@ public interface IRssFeedService {
     RssFeedEntity findOne(Long id);
 
     void delete(RssFeedEntity rssFeedEntity);
+
+    void refresh(RssFeedEntity rssFeedEntity);
+
+    long countAllFeeds();
 }

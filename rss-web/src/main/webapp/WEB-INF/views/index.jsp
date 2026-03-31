@@ -8,10 +8,63 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
 
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <div class="panel panel-primary text-center">
+                        <div class="panel-heading"><spring:message code="page.index.stats.articles"/></div>
+                        <div class="panel-body">
+                            <h3>${totalArticles}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <div class="panel panel-success text-center">
+                        <div class="panel-heading"><spring:message code="page.index.stats.channels"/></div>
+                        <div class="panel-body">
+                            <h3>${totalChannels}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <div class="panel panel-info text-center">
+                        <div class="panel-heading"><spring:message code="page.index.stats.users"/></div>
+                        <div class="panel-body">
+                            <h3>${totalUsers}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form method="get" action="${pageContext.request.contextPath}/" class="form-inline" style="margin-bottom: 20px;">
+                <div class="form-group" style="width: 78%;">
+                    <input type="text"
+                           class="form-control"
+                           name="q"
+                           value="<c:out value="${searchQuery}"/>"
+                           placeholder="<spring:message code='page.index.search.placeholder'/>"
+                           style="width: 100%;"/>
+                </div>
+                <button type="submit" class="btn btn-primary"><spring:message code="page.index.search.button"/></button>
+                <a href="${pageContext.request.contextPath}/" class="btn btn-default"><spring:message code="page.index.search.clear"/></a>
+            </form>
+
+            <c:if test="${isSearchActive}">
+                <div class="alert alert-info" role="alert">
+                    <spring:message code="page.index.search.results"/>: <strong><c:out value="${searchQuery}"/></strong>
+                </div>
+            </c:if>
+
             <c:choose>
                 <c:when test="${items == null || items.size() == 0}">
                     <div id="post-alert" class="alert alert-warning" role="alert">
-                        <spring:message code="page.index.alert.noMessages"/>
+                        <c:choose>
+                            <c:when test="${isSearchActive}">
+                                <spring:message code="page.index.alert.noSearchResults"/>
+                            </c:when>
+                            <c:otherwise>
+                                <spring:message code="page.index.alert.noMessages"/>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </c:when>
             </c:choose>
@@ -23,6 +76,7 @@
                     <h2>
                         <a href="<c:out value="${item.link}"/>" target="_blank">${item.title}</a>
                     </h2>
+                    <p><span class="label label-default"><c:out value="${item.rssFeedEntity.name}"/></span></p>
 
                     <p> ${item.description}
                         <a href="<c:out value="${item.link}"/>" target="_blank"><spring:message code="page.index.readMore"/></a>

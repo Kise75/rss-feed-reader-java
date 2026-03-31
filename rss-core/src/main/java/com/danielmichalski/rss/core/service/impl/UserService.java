@@ -89,4 +89,9 @@ public class UserService implements IUserService {
     public void removeUser(Long id) {
         userRepository.delete(id);
     }
+
+    @Override
+    public long countAllUsers() {
+        return userRepository.count();
+    }
 }
